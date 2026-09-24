@@ -1,6 +1,6 @@
 # Library API
 
-The repository is becoming a reusable **contract + TypeScript SDK**, not a browser application. The first SDK slice below is implemented; market metadata and verified outcome delivery remain planned.
+The repository is becoming a reusable **contract + TypeScript SDK**, not a browser application. The escrow operations and a first read-only market lookup are implemented; verified outcome delivery remains planned.
 
 ## Initial package
 
@@ -13,10 +13,11 @@ The repository is becoming a reusable **contract + TypeScript SDK**, not a brows
 | `getClaimability` | Explain who can claim now, using contract state and chain time. This is a convenience view, not a substitute for an onchain check. |
 | `claimEscrow` | Submit a claim and wait for its receipt. |
 | `@conditional-event-escrow/sdk/development` `reportSimulatedOutcome` | Submit a **simulated** result on supported test chains only. |
+| `@conditional-event-escrow/sdk/kalshi` `getKalshiMarket` | Fetch one binary market's identity, rules, status, and raw API result without changing contract state. |
 
 The initial library should validate addresses, nonzero deposits, nonempty market identifiers, supported chain IDs, and future deadlines before broadcasting. It should surface transaction hashes and onchain errors rather than masking them. It must never label a user-entered result as verified by Kalshi.
 
-The next library slice can read Kalshi's public market metadata to confirm the ticker, show the exact rules, and record what question the developer intended. This is **read-only metadata**, not a trusted onchain result.
+The market lookup confirms the API returned the exact requested ticker and exposes the rules for review. It does not bind the fetched rules to a deployed contract, and its result field is **read-only offchain data**, not a trusted onchain result.
 
 ## Exclusions
 

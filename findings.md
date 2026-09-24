@@ -28,6 +28,8 @@
 - SDK dependencies are now pinned locally (`viem` 2.56.8 and TypeScript 5.9.3); initial typecheck passed. Foundry's artifact stores creation bytecode at `out/DemoEventEscrow.sol/DemoEventEscrow.json` under `bytecode.object`.
 - Focused SDK review found two read-side risks: values could be sampled from different blocks, and an unknown numeric outcome could be mislabeled unresolved. The SDK now pins all state reads to one block and rejects unknown outcomes.
 - Viem cached `getBlockNumber()` across a newly mined report transaction in the local SDK test. `getEscrow` explicitly requests an uncached block number before taking its single-block snapshot.
+- Kalshi's public, unauthenticated `GET /markets/{ticker}` endpoint returns a `market` object with `ticker`, `market_type`, `title`, `rules_primary`, `rules_secondary`, `status`, and `result`. Official API docs: https://docs.kalshi.com/api-reference/market/get-market and https://docs.kalshi.com/getting_started/quick_start_market_data. Public metadata is offchain information, not a verified contract input.
+- A live read of finalized binary ticker `KXCOPPERW-26JUL2417-T6.29` returned the documented fields, `status: "finalized"`, and `result: "yes"`. The adapter should keep status/result as descriptive API data rather than equating them with onchain settlement authority. Market ticker syntax includes dots as well as hyphens.
 
 ## References
 - Kalshi public market API: https://docs.kalshi.com/getting_started/quick_start_market_data

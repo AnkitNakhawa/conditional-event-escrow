@@ -32,7 +32,9 @@ Phase 4 — reusable library API.
 - [x] Keep simulated reporting explicitly in a development-only API.
 - [x] Test argument validation, bytecode compatibility, and one SDK-to-Anvil flow without duplicating every Solidity test.
 - [x] Add package build/typecheck/test to CI and document library usage.
-- [ ] Add a read-only Kalshi market adapter that validates market identity and exposes its rules/status without claiming the outcome is verified onchain.
+- [x] Add a read-only Kalshi market adapter that validates market identity and exposes its rules/status without claiming the outcome is verified onchain.
+  - [x] First slice: fetch one market by exact ticker; validate basic response fields; surface rules/status without reporting onchain.
+  - [x] Test valid, missing, malformed, and HTTP-failure responses with a mocked fetch; run full CI checks before commit.
 
 ### Phase 5 — real outcome integration research (pending)
 - [ ] Confirm a reliable, usable final-outcome feed for specific Kalshi market IDs.

@@ -8,4 +8,13 @@ The main package exports `createEscrow`, `getEscrow`, `getClaimability`, and `cl
 
 `createEscrow` requires a nonzero ETH deposit, a beneficiary, a reporter, a future resolution deadline, and a market ticker. It returns the deployed address and transaction receipt. `getEscrow` returns a one-block snapshot; `getClaimability` interprets that snapshot at a supplied chain timestamp. `claimEscrow` broadcasts a claim and waits for success.
 
-The ticker is currently descriptive text only. The SDK does **not** check Kalshi's market rules or validate a final outcome. See [the library roadmap](../../docs/library-api.md) for planned metadata and outcome-source integrations.
+The separate `@conditional-event-escrow/sdk/kalshi` export provides `getKalshiMarket(ticker)`. It reads one public Kalshi binary market and returns its exact ticker, title, rules, status, and raw API result. It requires no Kalshi key. A caller may inject `fetcher` for tests or pass an abort `signal`; requests time out after ten seconds.
+
+```ts
+import { getKalshiMarket } from '@conditional-event-escrow/sdk/kalshi';
+
+const market = await getKalshiMarket('KXCOPPERW-26JUL2417-T6.29');
+console.log(market.title, market.rulesPrimary, market.status);
+```
+
+This lookup does **not** bind the ticker to the contract, verify that Kalshi's data is authentic onchain, or authorize a payout. `reportedResult` is descriptive offchain API data only. See [the library roadmap](../../docs/library-api.md) for the remaining outcome-source work.

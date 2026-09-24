@@ -31,6 +31,10 @@
 - Added focused SDK validation/state tests and one Anvil integration test. First run found a case-only address mismatch in the test assertion; normalized addresses for comparison.
 - A review found that cached block numbers could return stale state after a transaction. Disabled that cache for `getEscrow` and kept its reads pinned to one block; reran the integration flow successfully.
 
+## 2026-09-24 — read-only Kalshi lookup
+- Added a separately imported `getKalshiMarket` function for one exact binary market ticker. It returns title, rules, status, and a raw API result without submitting anything onchain.
+- Added five mocked-fetch tests for the happy path, invalid ticker, HTTP errors, malformed/unsupported responses, and absent result. SDK tests passed; a live read of a finalized copper market returned the expected fields.
+
 ## Test results
 | Check | Result |
 | --- | --- |
@@ -44,6 +48,7 @@
 | `forge test --fuzz-runs 1000` after smoke addition | Pass |
 | `npm test --prefix packages/sdk` | Pass: 4 focused tests, including live Anvil deploy/report/claim |
 | Full pre-commit check: formatting, build, 1,000-run fuzz tests, SDK tests, local transaction demo, diff whitespace | Pass |
+| Kalshi adapter SDK tests | Pass: 9 SDK tests total; live read also passed |
 
 ## Commit log
 - `902990d` — docs: establish testnet escrow plan.
@@ -52,3 +57,5 @@
 - `e992b80` — ci: verify contract build and fuzz tests.
 - `750135f` — docs: add reproducible local payout walkthrough.
 - `3c65c7c` — feat: add one-command local transaction demo.
+- `84fee18` — docs: prioritize reusable library over interface.
+- `e450ee1` — feat: add testnet escrow TypeScript SDK.

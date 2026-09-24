@@ -12,6 +12,10 @@
     "./development": {
       "types": "./dist/development.d.ts",
       "default": "./dist/development.js"
+    },
+    "./kalshi": {
+      "types": "./dist/kalshi.d.ts",
+      "default": "./dist/kalshi.js"
     }
   },
   "scripts": {
