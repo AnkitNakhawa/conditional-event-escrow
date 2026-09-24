@@ -9,6 +9,7 @@
 - Added contract and test skeleton. First test invocation exposed a Foundry naming rule: `testFailed*` was interpreted as the removed `testFail*` syntax; renamed before rerunning.
 - Implemented `DemoEventEscrow` with a chain-ID guard and 13 unit/fuzz tests.
 - Code review identified and documented non-production limitations; added cases for post-deadline YES claims, direct-deposit rejection, and NO/timeout conservation.
+- Added GitHub Actions checks for formatting, compilation, and 1,000-run fuzz tests on pushes and pull requests.
 
 ## Test results
 | Check | Result |
@@ -22,3 +23,4 @@
 ## Commit log
 - `902990d` — docs: establish testnet escrow plan.
 - `77ffcfb` — docs: specify escrow lifecycle and test matrix.
+- `3f5ff8b` — feat: add testnet-only conditional escrow contract.
