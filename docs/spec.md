@@ -22,6 +22,8 @@ This is a **testnet-only demonstration**. The reporter is an arbitrary trusted a
 
 If the claim recipient cannot receive ETH, the claim reverts without marking it paid, allowing a retry. Unexpected direct ETH transfers are rejected. A reporter cannot overwrite a result or report after the deadline. The deadline is for **resolution**, not the market's event closing time; it must allow for Kalshi settlement delays.
 
+The reporter can submit either result without proving that Kalshi settled it. The ticker is not looked up or authenticated. If a beneficiary or depositor is a contract that permanently refuses ETH and cannot call through an alternate method, its payout can remain stuck. This is a demo limitation, not a production escrow design.
+
 ## Test matrix
 - Constructor rejects empty deposit, zero actor addresses, empty ticker, and past deadline.
 - Reporter-only result; one report maximum; no report at or after deadline.

@@ -4,7 +4,7 @@
 Build an open-source, testnet-only demo of a fully funded conditional payment tied to the final outcome of a named Kalshi market. The demo must never imply that a simulated result is verified by Kalshi.
 
 ## Current phase
-Phase 2 — contract MVP.
+Phase 3 — demo workflow.
 
 ## Phases
 
@@ -13,14 +13,14 @@ Phase 2 — contract MVP.
 - [x] Document actors, state transitions, funding, timeout, and failure cases.
 - [x] Choose a small contract interface and test matrix.
 
-### Phase 2 — contract MVP (in progress)
-- [ ] Implement a single-deposit escrow for one market and one beneficiary.
-- [ ] Use an explicitly simulated outcome reporter for testnet only.
-- [ ] Support YES payout, NO refund, and an unresolved timeout refund.
-- [ ] Prevent duplicate settlement, duplicate claims, and unauthorized reporting.
-- [ ] Write unit, fuzz, and invariant tests; commit only after tests pass.
+### Phase 2 — contract MVP (complete)
+- [x] Implement a single-deposit escrow for one market and one beneficiary.
+- [x] Use an explicitly simulated outcome reporter for testnet only.
+- [x] Support YES payout, NO refund, and an unresolved timeout refund.
+- [x] Prevent duplicate settlement, duplicate claims, and unauthorized reporting.
+- [x] Write unit and fuzz/property tests; commit only after tests pass.
 
-### Phase 3 — demo workflow (pending)
+### Phase 3 — demo workflow (in progress)
 - [ ] Add a minimal interface showing market rules, escrow status, and testnet disclaimer.
 - [ ] Include reproducible local and testnet instructions.
 - [ ] Test the complete deposit → report → claim/refund path.
@@ -54,4 +54,5 @@ Phase 2 — contract MVP.
 ## Errors encountered
 | Error | Attempt | Resolution |
 | --- | --- | --- |
-| None yet | — | — |
+| `forge fmt --check` found formatting differences | 1 | Ran `forge fmt` before the next test. |
+| Foundry treats `testFailed*` as removed legacy `testFail*` syntax | 1 | Renamed test to `testTransferFailureDoesNotConsumeClaim`. |

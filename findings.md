@@ -15,6 +15,9 @@
 - GitHub CLI is authenticated as `AnkitNakhawa` and has repository creation scope.
 - Foundry `forge` is installed locally.
 - The existing `onchain-capability-graph` repository is a separate project.
+- The demo contract rejects deployment except on Anvil/local chain ID 31337 and Base Sepolia chain ID 84532.
+- Contract review found key non-production limitations: reporter can lie or report before Kalshi settles; a recipient contract that rejects ETH can strand its own payout; ticker is descriptive metadata only and not validated against Kalshi.
+- Unit and fuzz/property tests cover YES, NO, timeout, authorization, deadlines, invalid construction, direct deposits, failed transfers, and conservation of the initial deposit.
 
 ## References
 - Kalshi public market API: https://docs.kalshi.com/getting_started/quick_start_market_data
