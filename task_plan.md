@@ -4,16 +4,16 @@
 Build an open-source, testnet-only demo of a fully funded conditional payment tied to the final outcome of a named Kalshi market. The demo must never imply that a simulated result is verified by Kalshi.
 
 ## Current phase
-Phase 1 — repository and specification.
+Phase 2 — contract MVP.
 
 ## Phases
 
-### Phase 1 — repository and specification (in progress)
-- [ ] Create public GitHub repository and commit this plan.
-- [ ] Document actors, state transitions, funding, timeout, and failure cases.
-- [ ] Choose a small contract interface and test matrix.
+### Phase 1 — repository and specification (complete)
+- [x] Create public GitHub repository and commit this plan.
+- [x] Document actors, state transitions, funding, timeout, and failure cases.
+- [x] Choose a small contract interface and test matrix.
 
-### Phase 2 — contract MVP (pending)
+### Phase 2 — contract MVP (in progress)
 - [ ] Implement a single-deposit escrow for one market and one beneficiary.
 - [ ] Use an explicitly simulated outcome reporter for testnet only.
 - [ ] Support YES payout, NO refund, and an unresolved timeout refund.
@@ -42,6 +42,8 @@ Phase 1 — repository and specification.
 | Testnet-only and mock reporter first | The Kalshi-to-chain trust boundary is not validated yet. |
 | One escrow, not tradable YES/NO tokens | Tests the actual user problem with far less security and regulatory surface. |
 | Full funding at creation | A promised payout must be backed before settlement. |
+| Testnet ETH deposit for MVP | Minimizes token-integration code while proving payout lifecycle; stablecoin support is later. |
+| Explicit `DemoEventEscrow` contract name | Makes the unverified demo status visible to code readers. |
 | Small commits after passing tests | Makes changes easy to inspect and recover. |
 
 ## Open questions
