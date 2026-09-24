@@ -28,10 +28,10 @@ Phase 4 — reusable library API.
 
 ### Phase 4 — reusable library API (in progress)
 - [x] Specify the public SDK surface and safety labels in `docs/library-api.md`.
-- [ ] Implement a typed TypeScript package for deployment, reading escrow state, and claiming.
-- [ ] Keep simulated reporting explicitly in a development-only API.
-- [ ] Test argument validation, ABI compatibility, and one SDK-to-Anvil flow without duplicating every Solidity test.
-- [ ] Add package build/typecheck/test to CI and document library usage.
+- [x] Implement a typed TypeScript package for deployment, reading escrow state, and claiming.
+- [x] Keep simulated reporting explicitly in a development-only API.
+- [x] Test argument validation, bytecode compatibility, and one SDK-to-Anvil flow without duplicating every Solidity test.
+- [x] Add package build/typecheck/test to CI and document library usage.
 - [ ] Add a read-only Kalshi market adapter that validates market identity and exposes its rules/status without claiming the outcome is verified onchain.
 
 ### Phase 5 — real outcome integration research (pending)
@@ -71,3 +71,6 @@ Phase 4 — reusable library API.
 | --- | --- | --- |
 | `forge fmt --check` found formatting differences | 1 | Ran `forge fmt` before the next test. |
 | Foundry treats `testFailed*` as removed legacy `testFail*` syntax | 1 | Renamed test to `testTransferFailureDoesNotConsumeClaim`. |
+| `forge inspect ... bytecode --json` is not JSON in this Foundry version | 1 | Treat its raw `0x` output as hex when generating the SDK bytecode constant. |
+| SDK integration test compared checksummed and lowercase addresses literally | 1 | Normalize case for address equality; preserve original values in the SDK. |
+| Viem's cached block number made a fresh report appear unresolved | 1 | Disable caching for the block-number lookup while pinning all reads to that block. |

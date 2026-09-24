@@ -26,6 +26,10 @@
 - User chose library functionality before any interface. Updated the roadmap accordingly and specified the first typed SDK API in `docs/library-api.md`.
 - The UI is now optional and deferred until after library and outcome-source work.
 - Scoped the library as typed contract operations first, followed by read-only Kalshi market metadata; neither step claims to provide verified settlement.
+- Began the first SDK slice using Viem; Foundry's bytecode inspection emits raw hex even with `--json`, so adjusted the generated artifact workflow.
+- Added a typed SDK package with deploy, state reads, claimability, claim, and a separately imported simulated reporter. Installed pinned dependencies and passed the first TypeScript build.
+- Added focused SDK validation/state tests and one Anvil integration test. First run found a case-only address mismatch in the test assertion; normalized addresses for comparison.
+- A review found that cached block numbers could return stale state after a transaction. Disabled that cache for `getEscrow` and kept its reads pinned to one block; reran the integration flow successfully.
 
 ## Test results
 | Check | Result |
@@ -38,6 +42,8 @@
 | `bash -n scripts/local-demo.sh` | Pass |
 | `bash scripts/local-demo.sh` twice | Pass both times: deploy 1 ETH, report simulated YES, beneficiary claim, escrow balance 0 |
 | `forge test --fuzz-runs 1000` after smoke addition | Pass |
+| `npm test --prefix packages/sdk` | Pass: 4 focused tests, including live Anvil deploy/report/claim |
+| Full pre-commit check: formatting, build, 1,000-run fuzz tests, SDK tests, local transaction demo, diff whitespace | Pass |
 
 ## Commit log
 - `902990d` — docs: establish testnet escrow plan.

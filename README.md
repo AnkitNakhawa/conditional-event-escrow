@@ -1,6 +1,6 @@
 # Conditional Event Escrow
 
-An experimental project building a testnet-only developer library for payments conditional on an event-market result. The existing contract and local demo use a **simulated outcome reporter**. They do **not** verify Kalshi settlements and must not be used with real funds. A typed SDK is the next implementation milestone; see [docs/library-api.md](docs/library-api.md).
+An experimental project building a testnet-only developer library for payments conditional on an event-market result. The existing contract, local demo, and [typed SDK](packages/sdk/README.md) use a **simulated outcome reporter**. They do **not** verify Kalshi settlements and must not be used with real funds. See [docs/library-api.md](docs/library-api.md) for the library roadmap.
 
 See [task_plan.md](task_plan.md) for the roadmap and safety boundaries.
 

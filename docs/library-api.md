@@ -1,10 +1,10 @@
-# Library API design (planned)
+# Library API
 
-The repository will become a reusable **contract + TypeScript SDK**, not a browser application. This is an API target for the next implementation increment, not a claim that these functions already exist.
+The repository is becoming a reusable **contract + TypeScript SDK**, not a browser application. The first SDK slice below is implemented; market metadata and verified outcome delivery remain planned.
 
 ## Initial package
 
-`packages/sdk` will expose typed operations for the current testnet-only escrow:
+`packages/sdk` exposes typed operations for the current testnet-only escrow:
 
 | Operation | Purpose |
 | --- | --- |
@@ -12,11 +12,11 @@ The repository will become a reusable **contract + TypeScript SDK**, not a brows
 | `getEscrow` | Read the market ticker, parties, deadline, deposit, outcome, and claimed state. |
 | `getClaimability` | Explain who can claim now, using contract state and chain time. This is a convenience view, not a substitute for an onchain check. |
 | `claimEscrow` | Submit a claim and wait for its receipt. |
-| `development.reportSimulatedOutcome` | Submit a **simulated** result on supported test chains only. |
+| `@conditional-event-escrow/sdk/development` `reportSimulatedOutcome` | Submit a **simulated** result on supported test chains only. |
 
 The initial library should validate addresses, nonzero deposits, nonempty market identifiers, supported chain IDs, and future deadlines before broadcasting. It should surface transaction hashes and onchain errors rather than masking them. It must never label a user-entered result as verified by Kalshi.
 
-A second library slice can read Kalshi's public market metadata to confirm the ticker, show the exact rules, and record what question the developer intended. This is **read-only metadata**, not a trusted onchain result.
+The next library slice can read Kalshi's public market metadata to confirm the ticker, show the exact rules, and record what question the developer intended. This is **read-only metadata**, not a trusted onchain result.
 
 ## Exclusions
 

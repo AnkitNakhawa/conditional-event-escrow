@@ -25,6 +25,9 @@
 - The current contract is reusable on test chains, but the CLI demo is not a developer API. The next smallest library surface is a typed SDK for deploy/read/claim, with simulated reporting isolated under a development namespace.
 - Viem's official docs support typed contract deployment, read/write calls, and wallet/public clients. The SDK can accept caller-provided Viem clients rather than managing keys or RPC credentials.
 - Local npm registry check found Viem 2.56.8 available. No dependency has been installed yet; the next coding slice can pin and test the package rather than making a speculative wrapper.
+- SDK dependencies are now pinned locally (`viem` 2.56.8 and TypeScript 5.9.3); initial typecheck passed. Foundry's artifact stores creation bytecode at `out/DemoEventEscrow.sol/DemoEventEscrow.json` under `bytecode.object`.
+- Focused SDK review found two read-side risks: values could be sampled from different blocks, and an unknown numeric outcome could be mislabeled unresolved. The SDK now pins all state reads to one block and rejects unknown outcomes.
+- Viem cached `getBlockNumber()` across a newly mined report transaction in the local SDK test. `getEscrow` explicitly requests an uncached block number before taking its single-block snapshot.
 
 ## References
 - Kalshi public market API: https://docs.kalshi.com/getting_started/quick_start_market_data

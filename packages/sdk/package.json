@@ -1,0 +1,27 @@
+{
+  "name": "@conditional-event-escrow/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Testnet-only typed client for event-conditioned escrow",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./development": {
+      "types": "./dist/development.d.ts",
+      "default": "./dist/development.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.mjs"
+  },
+  "dependencies": {
+    "viem": "2.56.8"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}
