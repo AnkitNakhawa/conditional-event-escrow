@@ -22,8 +22,9 @@ Phase 3 — demo workflow.
 
 ### Phase 3 — demo workflow (in progress)
 - [ ] Add a minimal interface showing market rules, escrow status, and testnet disclaimer.
-- [ ] Include reproducible local and testnet instructions.
-- [ ] Test the complete deposit → report → claim/refund path.
+- [x] Include reproducible local demo instructions.
+- [ ] Include testnet deployment instructions after the interface and reporter workflow are ready.
+- [x] Test the complete deposit → report → claim/refund path locally.
 
 ### Phase 4 — real outcome integration research (pending)
 - [ ] Confirm a reliable, usable final-outcome feed for specific Kalshi market IDs.
