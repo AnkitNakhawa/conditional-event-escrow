@@ -22,6 +22,11 @@
 - Added the local smoke command to GitHub Actions; existing contract tests remain unchanged.
 - GitHub Actions passed with the new Anvil smoke step: https://github.com/AnkitNakhawa/conditional-event-escrow/actions/runs/35962712637
 
+## 2026-09-24 — library-first pivot
+- User chose library functionality before any interface. Updated the roadmap accordingly and specified the first typed SDK API in `docs/library-api.md`.
+- The UI is now optional and deferred until after library and outcome-source work.
+- Scoped the library as typed contract operations first, followed by read-only Kalshi market metadata; neither step claims to provide verified settlement.
+
 ## Test results
 | Check | Result |
 | --- | --- |

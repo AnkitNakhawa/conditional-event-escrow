@@ -1,10 +1,10 @@
 # Conditional Event Escrow — build plan
 
 ## Goal
-Build an open-source, testnet-only demo of a fully funded conditional payment tied to the final outcome of a named Kalshi market. The demo must never imply that a simulated result is verified by Kalshi.
+Build an open-source developer library for fully funded, event-conditioned escrows. Its first release is testnet-only and uses a simulated result; the library must never imply that a simulated result is verified by Kalshi.
 
 ## Current phase
-Phase 3 — demo workflow.
+Phase 4 — reusable library API.
 
 ## Phases
 
@@ -20,20 +20,28 @@ Phase 3 — demo workflow.
 - [x] Prevent duplicate settlement, duplicate claims, and unauthorized reporting.
 - [x] Write unit and fuzz/property tests; commit only after tests pass.
 
-### Phase 3 — demo workflow (in progress)
+### Phase 3 — local transaction proof (complete)
 - [x] Add a one-command local Anvil demo using separate deployment, report, and claim transactions.
 - [x] Check onchain escrow state and balances after the flow; run the smoke test in CI.
-- [ ] Add a minimal interface showing market rules, escrow status, and testnet disclaimer.
 - [x] Include reproducible local demo instructions.
-- [ ] Include testnet deployment instructions after the interface and reporter workflow are ready.
 - [x] Test the complete deposit → report → claim/refund path locally.
 
-### Phase 4 — real outcome integration research (pending)
+### Phase 4 — reusable library API (in progress)
+- [x] Specify the public SDK surface and safety labels in `docs/library-api.md`.
+- [ ] Implement a typed TypeScript package for deployment, reading escrow state, and claiming.
+- [ ] Keep simulated reporting explicitly in a development-only API.
+- [ ] Test argument validation, ABI compatibility, and one SDK-to-Anvil flow without duplicating every Solidity test.
+- [ ] Add package build/typecheck/test to CI and document library usage.
+- [ ] Add a read-only Kalshi market adapter that validates market identity and exposes its rules/status without claiming the outcome is verified onchain.
+
+### Phase 5 — real outcome integration research (pending)
 - [ ] Confirm a reliable, usable final-outcome feed for specific Kalshi market IDs.
 - [ ] Evaluate Stork access, terms, latency, fees, disputes, and unsupported markets.
-- [ ] Design a replaceable reporter interface; do not ship real-money settlement by default.
+- [ ] Design a replaceable outcome-source adapter; do not ship real-money settlement by default.
 
-### Phase 5 — external review and pilot (pending)
+### Phase 6 — optional demos and external review (pending)
+- [ ] Add a user-facing interface only if it helps validate a concrete use case.
+- [ ] Include testnet deployment instructions after the library and reporter workflow are ready.
 - [ ] Get user feedback on a concrete conditional-payment use case.
 - [ ] Obtain independent security and legal review before any public real-money use.
 
@@ -49,6 +57,9 @@ Phase 3 — demo workflow.
 | Explicit `DemoEventEscrow` contract name | Makes the unverified demo status visible to code readers. |
 | Small commits after passing tests | Makes changes easy to inspect and recover. |
 | Use Anvil's unlocked local accounts for the demo | Avoid storing even throwaway private keys in the repository. |
+| Library before interface | Developers need reusable functionality first; a UI is optional and comes later. |
+| TypeScript SDK around the existing EVM contract | A typed deploy/read/claim client is the smallest broadly usable developer surface. |
+| Market metadata before any outcome oracle | Prevent accidental use of arbitrary or ambiguous ticker strings while keeping data lookup separate from settlement authority. |
 
 ## Open questions
 - Which Kalshi markets have unambiguous final outcomes suitable for payment conditions?
