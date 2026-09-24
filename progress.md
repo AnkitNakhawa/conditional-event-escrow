@@ -20,6 +20,7 @@
 - Ran the local demo twice consecutively to verify the flow and cleanup; both passed.
 - Replaced Bash integer comparison with Python's arbitrary-precision integer comparison for ETH-sized balances.
 - Added the local smoke command to GitHub Actions; existing contract tests remain unchanged.
+- GitHub Actions passed with the new Anvil smoke step: https://github.com/AnkitNakhawa/conditional-event-escrow/actions/runs/35962712637
 
 ## Test results
 | Check | Result |
@@ -38,3 +39,5 @@
 - `77ffcfb` — docs: specify escrow lifecycle and test matrix.
 - `3f5ff8b` — feat: add testnet-only conditional escrow contract.
 - `e992b80` — ci: verify contract build and fuzz tests.
+- `750135f` — docs: add reproducible local payout walkthrough.
+- `3c65c7c` — feat: add one-command local transaction demo.
