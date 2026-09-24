@@ -35,6 +35,8 @@ Phase 4 — reusable library API.
 - [x] Add a read-only Kalshi market adapter that validates market identity and exposes its rules/status without claiming the outcome is verified onchain.
   - [x] First slice: fetch one market by exact ticker; validate basic response fields; surface rules/status without reporting onchain.
   - [x] Test valid, missing, malformed, and HTTP-failure responses with a mocked fetch; run full CI checks before commit.
+  - [x] Add a read-only settlement-candidate assessment for finalized binary YES/NO API results, with explicit non-actionable reasons and no transaction path.
+  - [x] Test finalized YES/NO, unfinished, missing, and unsupported results; verify against a live finalized example.
 
 ### Phase 5 — real outcome integration research (pending)
 - [ ] Confirm a reliable, usable final-outcome feed for specific Kalshi market IDs.
@@ -76,3 +78,5 @@ Phase 4 — reusable library API.
 | `forge inspect ... bytecode --json` is not JSON in this Foundry version | 1 | Treat its raw `0x` output as hex when generating the SDK bytecode constant. |
 | SDK integration test compared checksummed and lowercase addresses literally | 1 | Normalize case for address equality; preserve original values in the SDK. |
 | Viem's cached block number made a fresh report appear unresolved | 1 | Disable caching for the block-number lookup while pinning all reads to that block. |
+| Local TypeScript build and `git status` stalled in filesystem reads | 1 | Verified the SDK from a clean temporary package install; retrying repository checks and will rely on CI for a clean checkout. |
+| `git diff --check` temporarily reported "Not a git repository" although `.git` exists | 1 | Repository commands recovered after delayed filesystem reads; recheck before committing. |

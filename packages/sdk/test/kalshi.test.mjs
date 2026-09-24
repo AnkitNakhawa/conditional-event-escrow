@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { getKalshiMarket } from '../dist/kalshi.js';
+import { getKalshiMarket, getKalshiSettlementCandidate } from '../dist/kalshi.js';
 
 const ticker = 'KXCOPPERW-26JUL2417-T6.29';
 const market = {
@@ -59,4 +59,41 @@ test('preserves unknown status and does not invent a result', async () => {
   const result = await getKalshiMarket(ticker, { fetcher: respond({ market: { ...market, status: 'open', result: '' } }) });
   assert.equal(result.status, 'open');
   assert.equal(result.reportedResult, null);
+});
+
+test('classifies finalized YES and NO as unverified settlement candidates', async () => {
+  for (const reportedOutcome of ['yes', 'no']) {
+    const candidate = await getKalshiSettlementCandidate(ticker, {
+      fetcher: respond({ market: { ...market, result: reportedOutcome } }),
+    });
+    assert.equal(candidate.kind, 'candidate');
+    assert.equal(candidate.reportedOutcome, reportedOutcome);
+    assert.equal(candidate.market.ticker, ticker);
+    assert.equal(candidate.verifiedOnchain, false);
+  }
+});
+
+test('does not accept a result before finalization', async () => {
+  const candidate = await getKalshiSettlementCandidate(ticker, {
+    fetcher: respond({ market: { ...market, status: 'open', result: 'yes' } }),
+  });
+  assert.equal(candidate.kind, 'not_ready');
+  assert.equal(candidate.reason, 'not_finalized');
+});
+
+test('explains missing and unsupported finalized results', async () => {
+  for (const [result, reason] of [['', 'missing_result'], ['0.50', 'unsupported_result']]) {
+    const candidate = await getKalshiSettlementCandidate(ticker, {
+      fetcher: respond({ market: { ...market, result } }),
+    });
+    assert.equal(candidate.kind, 'not_ready');
+    assert.equal(candidate.reason, reason);
+  }
+});
+
+test('inherits exact-market and HTTP safeguards from the lookup', async () => {
+  await assert.rejects(getKalshiSettlementCandidate(ticker, { fetcher: respond({}, 404) }), /HTTP 404/);
+  await assert.rejects(getKalshiSettlementCandidate(ticker, {
+    fetcher: respond({ market: { ...market, ticker: 'WRONG' } }),
+  }), /different market ticker/);
 });

@@ -18,6 +18,21 @@ export interface GetKalshiMarketOptions {
   signal?: AbortSignal;
 }
 
+/** A classification of public API data, never authorization to report onchain. */
+export type KalshiSettlementCandidate =
+  | {
+      kind: 'candidate';
+      market: KalshiMarket;
+      reportedOutcome: 'yes' | 'no';
+      verifiedOnchain: false;
+    }
+  | {
+      kind: 'not_ready';
+      market: KalshiMarket;
+      reason: 'not_finalized' | 'missing_result' | 'unsupported_result';
+      verifiedOnchain: false;
+    };
+
 function object(value: unknown): Record<string, unknown> {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error('Invalid Kalshi market response');
@@ -68,5 +83,28 @@ export async function getKalshiMarket(
     rulesSecondary: optionalString(market, 'rules_secondary'),
     status: requiredString(market, 'status'),
     reportedResult: optionalString(market, 'result'),
+  };
+}
+
+/** Classifies one fetched market for human review; it cannot submit a payout result. */
+export async function getKalshiSettlementCandidate(
+  ticker: string,
+  options: GetKalshiMarketOptions = {},
+): Promise<KalshiSettlementCandidate> {
+  const market = await getKalshiMarket(ticker, options);
+  if (market.status !== 'finalized') {
+    return { kind: 'not_ready', market, reason: 'not_finalized', verifiedOnchain: false };
+  }
+  if (market.reportedResult === null) {
+    return { kind: 'not_ready', market, reason: 'missing_result', verifiedOnchain: false };
+  }
+  if (market.reportedResult !== 'yes' && market.reportedResult !== 'no') {
+    return { kind: 'not_ready', market, reason: 'unsupported_result', verifiedOnchain: false };
+  }
+  return {
+    kind: 'candidate',
+    market,
+    reportedOutcome: market.reportedResult,
+    verifiedOnchain: false,
   };
 }

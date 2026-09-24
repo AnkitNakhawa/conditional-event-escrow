@@ -10,11 +10,15 @@ The main package exports `createEscrow`, `getEscrow`, `getClaimability`, and `cl
 
 The separate `@conditional-event-escrow/sdk/kalshi` export provides `getKalshiMarket(ticker)`. It reads one public Kalshi binary market and returns its exact ticker, title, rules, status, and raw API result. It requires no Kalshi key. A caller may inject `fetcher` for tests or pass an abort `signal`; requests time out after ten seconds.
 
+`getKalshiSettlementCandidate(ticker)` makes a second, read-only check: only API status `finalized` with result `yes` or `no` produces a `candidate`. Other responses return `not_ready` with `not_finalized`, `missing_result`, or `unsupported_result`; missing markets and network failures reject. A candidate is **not verified onchain** and must never be treated as permission to pay or to call the development reporter automatically.
+
 ```ts
-import { getKalshiMarket } from '@conditional-event-escrow/sdk/kalshi';
+import { getKalshiMarket, getKalshiSettlementCandidate } from '@conditional-event-escrow/sdk/kalshi';
 
 const market = await getKalshiMarket('KXCOPPERW-26JUL2417-T6.29');
 console.log(market.title, market.rulesPrimary, market.status);
+const assessment = await getKalshiSettlementCandidate(market.ticker);
+console.log(assessment.kind);
 ```
 
 This lookup does **not** bind the ticker to the contract, verify that Kalshi's data is authentic onchain, or authorize a payout. `reportedResult` is descriptive offchain API data only. See [the library roadmap](../../docs/library-api.md) for the remaining outcome-source work.

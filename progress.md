@@ -35,6 +35,12 @@
 - Added a separately imported `getKalshiMarket` function for one exact binary market ticker. It returns title, rules, status, and a raw API result without submitting anything onchain.
 - Added five mocked-fetch tests for the happy path, invalid ticker, HTTP errors, malformed/unsupported responses, and absent result. SDK tests passed; a live read of a finalized copper market returned the expected fields.
 
+## 2026-09-24 — settlement candidate check
+- Added `getKalshiSettlementCandidate`, a read-only classification of the existing exact-ticker binary lookup. Only API `finalized` plus exact `yes` or `no` returns an unverified candidate; all other data is non-actionable.
+- Added focused tests for both candidate outcomes, premature results, missing/unsupported results, and inherited HTTP/ticker safeguards.
+- Local repo reads intermittently stalled TypeScript and Git. Copied only SDK source/tests and the existing Foundry artifact to a temporary directory, ran a clean `npm ci`, and passed all 13 SDK tests there, including the Anvil integration flow.
+- Live `getKalshiSettlementCandidate` on the finalized copper example returned `candidate`, `yes`, and `verifiedOnchain: false`.
+
 ## Test results
 | Check | Result |
 | --- | --- |
@@ -49,6 +55,7 @@
 | `npm test --prefix packages/sdk` | Pass: 4 focused tests, including live Anvil deploy/report/claim |
 | Full pre-commit check: formatting, build, 1,000-run fuzz tests, SDK tests, local transaction demo, diff whitespace | Pass |
 | Kalshi adapter SDK tests | Pass: 9 SDK tests total; live read also passed |
+| Settlement-candidate SDK tests (clean temp install) | Pass: 13 SDK tests total; live read also passed |
 
 ## Commit log
 - `902990d` — docs: establish testnet escrow plan.

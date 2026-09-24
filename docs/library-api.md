@@ -14,10 +14,12 @@ The repository is becoming a reusable **contract + TypeScript SDK**, not a brows
 | `claimEscrow` | Submit a claim and wait for its receipt. |
 | `@conditional-event-escrow/sdk/development` `reportSimulatedOutcome` | Submit a **simulated** result on supported test chains only. |
 | `@conditional-event-escrow/sdk/kalshi` `getKalshiMarket` | Fetch one binary market's identity, rules, status, and raw API result without changing contract state. |
+| `@conditional-event-escrow/sdk/kalshi` `getKalshiSettlementCandidate` | Identify a finalized YES/NO result as an unverified, offchain candidate; explain why other responses cannot be used. |
 
 The initial library should validate addresses, nonzero deposits, nonempty market identifiers, supported chain IDs, and future deadlines before broadcasting. It should surface transaction hashes and onchain errors rather than masking them. It must never label a user-entered result as verified by Kalshi.
 
 The market lookup confirms the API returned the exact requested ticker and exposes the rules for review. It does not bind the fetched rules to a deployed contract, and its result field is **read-only offchain data**, not a trusted onchain result.
+The candidate assessment checks only the public API response. It cannot authenticate Kalshi to a smart contract, evaluate disputes or unusual payout rules, or submit a result.
 
 ## Exclusions
 
