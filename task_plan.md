@@ -21,6 +21,8 @@ Phase 3 — demo workflow.
 - [x] Write unit and fuzz/property tests; commit only after tests pass.
 
 ### Phase 3 — demo workflow (in progress)
+- [x] Add a one-command local Anvil demo using separate deployment, report, and claim transactions.
+- [x] Check onchain escrow state and balances after the flow; run the smoke test in CI.
 - [ ] Add a minimal interface showing market rules, escrow status, and testnet disclaimer.
 - [x] Include reproducible local demo instructions.
 - [ ] Include testnet deployment instructions after the interface and reporter workflow are ready.
@@ -46,6 +48,7 @@ Phase 3 — demo workflow.
 | Testnet ETH deposit for MVP | Minimizes token-integration code while proving payout lifecycle; stablecoin support is later. |
 | Explicit `DemoEventEscrow` contract name | Makes the unverified demo status visible to code readers. |
 | Small commits after passing tests | Makes changes easy to inspect and recover. |
+| Use Anvil's unlocked local accounts for the demo | Avoid storing even throwaway private keys in the repository. |
 
 ## Open questions
 - Which Kalshi markets have unambiguous final outcomes suitable for payment conditions?

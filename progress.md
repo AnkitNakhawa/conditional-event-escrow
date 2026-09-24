@@ -13,6 +13,14 @@
 - First GitHub Actions run completed successfully: https://github.com/AnkitNakhawa/conditional-event-escrow/actions/runs/35961483803
 - Added a local trace walkthrough for the YES, NO, and timeout paths.
 
+## 2026-09-24 — local transaction demo
+- Started the one-command Anvil demo increment. It will use separate onchain transactions and assert escrow balance/state afterward.
+- Corrected an initial CLI assumption: this Cast version uses `wallet derive-private-key`, not `wallet derive`. The demo will use unlocked local Anvil accounts instead of any private keys.
+- Implemented `scripts/local-demo.sh` using unlocked Anvil accounts. It starts and stops its own local chain, broadcasts three transactions, and checks receipt status and onchain payout state.
+- Ran the local demo twice consecutively to verify the flow and cleanup; both passed.
+- Replaced Bash integer comparison with Python's arbitrary-precision integer comparison for ETH-sized balances.
+- Added the local smoke command to GitHub Actions; existing contract tests remain unchanged.
+
 ## Test results
 | Check | Result |
 | --- | --- |
@@ -21,6 +29,9 @@
 | `forge test` | 13 passed, 0 failed; 3 fuzz/property tests at 256 runs each |
 | `forge test --fuzz-runs 1000` | 13 passed, 0 failed; 3 fuzz/property tests at 1,000 runs each |
 | `forge coverage --report summary` | Reported 100% contract lines/statements/branches/functions; tool emitted source-anchor warnings, so treat as a guide rather than a security guarantee |
+| `bash -n scripts/local-demo.sh` | Pass |
+| `bash scripts/local-demo.sh` twice | Pass both times: deploy 1 ETH, report simulated YES, beneficiary claim, escrow balance 0 |
+| `forge test --fuzz-runs 1000` after smoke addition | Pass |
 
 ## Commit log
 - `902990d` — docs: establish testnet escrow plan.

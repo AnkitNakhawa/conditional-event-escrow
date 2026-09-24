@@ -19,6 +19,8 @@
 - Contract review found key non-production limitations: reporter can lie or report before Kalshi settles; a recipient contract that rejects ETH can strand its own payout; ticker is descriptive metadata only and not validated against Kalshi.
 - Unit and fuzz/property tests cover YES, NO, timeout, authorization, deadlines, invalid construction, direct deposits, failed transfers, and conservation of the initial deposit.
 - Foundry's official GitHub Action (`foundry-rs/foundry-toolchain@v1`) supports installing a specific release and running `forge fmt`, `forge build`, and `forge test` in CI.
+- Local Foundry has `anvil`, `cast`, and `forge`, and `jq` is available for parsing transaction receipts. `forge create` supports a funded constructor deployment via `--value` and unlocked Anvil accounts via `--unlocked --from`.
+- The local smoke script completed actual Anvil transactions for funded deployment, reporter submission, and beneficiary claim. It asserts contract balance, result, claimed flag, receipt status, and beneficiary balance change. Existing unit/fuzz tests cover NO and timeout; the script deliberately covers only the YES end-to-end path to avoid redundant integration testing.
 
 ## References
 - Kalshi public market API: https://docs.kalshi.com/getting_started/quick_start_market_data

@@ -22,3 +22,5 @@ jobs:
         run: forge build --sizes
       - name: Test
         run: forge test --fuzz-runs 1000
+      - name: Run local transaction demo
+        run: bash scripts/local-demo.sh
