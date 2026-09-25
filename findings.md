@@ -32,6 +32,7 @@
 - A live read of finalized binary ticker `KXCOPPERW-26JUL2417-T6.29` returned the documented fields, `status: "finalized"`, and `result: "yes"`. The adapter should keep status/result as descriptive API data rather than equating them with onchain settlement authority. Market ticker syntax includes dots as well as hyphens.
 - For the next read-only assessment, use the existing exact-ticker/binary lookup and fail closed: only `status: "finalized"` with raw `result: "yes"` or `"no"` produces an offchain candidate. Other statuses and results remain non-actionable. This is an SDK safety convention based on the observed API shape, not a claim of cryptographic finality or source authentication.
 - Review of the candidate helper found no onchain write path. Remaining product risks are explicit: status strings may evolve (so the helper may conservatively reject a valid future status), public API data is not authenticated to the contract, and ticker/rules are not bound to a deployed escrow. These are deliberately deferred rather than silently treated as solved.
+- The existing contract's single `resolutionDeadline` already acts as an unresolved-refund long-stop, but it does not distinguish the start of reporting from that long-stop. The next increment should add `reportingOpensAt` as an explicit lower bound and rename the upper bound to `reportingDeadline`. This does not verify Kalshi finality; it only enforces a chosen reporting window.
 
 ## References
 - Kalshi public market API: https://docs.kalshi.com/getting_started/quick_start_market_data

@@ -32,7 +32,11 @@ contract DemoEventEscrowTest {
         returns (DemoEventEscrow)
     {
         return new DemoEventEscrow{value: amount}(
-            beneficiary, REPORTER, uint64(block.timestamp + 7 days), "KX-DEMO-MARKET"
+            beneficiary,
+            REPORTER,
+            uint64(block.timestamp),
+            uint64(block.timestamp + 7 days),
+            "KX-DEMO-MARKET"
         );
     }
 
@@ -70,7 +74,7 @@ contract DemoEventEscrowTest {
         DemoEventEscrow escrow = _deploy(BENEFICIARY, AMOUNT);
         vm.expectRevert(DemoEventEscrow.NotClaimable.selector);
         escrow.claim();
-        vm.warp(escrow.resolutionDeadline());
+        vm.warp(escrow.reportingDeadline());
         escrow.claim();
         require(address(this).balance == AMOUNT, "timeout refund failed");
     }
@@ -90,10 +94,65 @@ contract DemoEventEscrowTest {
     function testCannotResolveAtDeadline() public {
         vm.deal(address(this), AMOUNT);
         DemoEventEscrow escrow = _deploy(BENEFICIARY, AMOUNT);
-        vm.warp(escrow.resolutionDeadline());
+        vm.warp(escrow.reportingDeadline());
         vm.prank(REPORTER);
-        vm.expectRevert(DemoEventEscrow.ResolutionDeadlinePassed.selector);
+        vm.expectRevert(DemoEventEscrow.ReportingDeadlinePassed.selector);
         escrow.reportSimulatedOutcome(true);
+    }
+
+    function testReportingWindowBoundaries() public {
+        vm.deal(address(this), AMOUNT);
+        uint64 opensAt = uint64(block.timestamp + 1 days);
+        uint64 deadline = opensAt + 1 days;
+        DemoEventEscrow escrow = new DemoEventEscrow{value: AMOUNT}(
+            BENEFICIARY, REPORTER, opensAt, deadline, "KX-DEMO-MARKET"
+        );
+
+        vm.prank(REPORTER);
+        vm.expectRevert(DemoEventEscrow.ReportingNotOpen.selector);
+        escrow.reportSimulatedOutcome(true);
+        vm.warp(opensAt - 1);
+        vm.prank(REPORTER);
+        vm.expectRevert(DemoEventEscrow.ReportingNotOpen.selector);
+        escrow.reportSimulatedOutcome(true);
+        vm.warp(opensAt);
+        vm.expectRevert(DemoEventEscrow.NotClaimable.selector);
+        escrow.claim();
+        vm.warp(deadline - 1);
+        vm.prank(REPORTER);
+        escrow.reportSimulatedOutcome(true);
+        vm.warp(deadline);
+        vm.prank(BENEFICIARY);
+        escrow.claim();
+        require(BENEFICIARY.balance == AMOUNT, "timely result not honored");
+    }
+
+    function testUnresolvedAfterOpenStillRefundsOnlyAtDeadline() public {
+        vm.deal(address(this), AMOUNT);
+        uint64 opensAt = uint64(block.timestamp + 1 days);
+        uint64 deadline = opensAt + 1 days;
+        DemoEventEscrow escrow = new DemoEventEscrow{value: AMOUNT}(
+            BENEFICIARY, REPORTER, opensAt, deadline, "KX-DEMO-MARKET"
+        );
+        vm.warp(deadline - 1);
+        vm.expectRevert(DemoEventEscrow.NotClaimable.selector);
+        escrow.claim();
+        vm.warp(deadline);
+        escrow.claim();
+        require(address(this).balance == AMOUNT, "deadline refund failed");
+    }
+
+    function testReporterCanReportAtExactOpeningTime() public {
+        vm.deal(address(this), AMOUNT);
+        uint64 opensAt = uint64(block.timestamp + 1 days);
+        DemoEventEscrow escrow = new DemoEventEscrow{value: AMOUNT}(
+            BENEFICIARY, REPORTER, opensAt, opensAt + 1 days, "KX-DEMO-MARKET"
+        );
+        vm.warp(opensAt);
+        vm.prank(REPORTER);
+        escrow.reportSimulatedOutcome(false);
+        escrow.claim();
+        require(address(this).balance == AMOUNT, "opening-time report not honored");
     }
 
     function testYesResultStillPaysBeneficiaryAfterDeadline() public {
@@ -101,7 +160,7 @@ contract DemoEventEscrowTest {
         DemoEventEscrow escrow = _deploy(BENEFICIARY, AMOUNT);
         vm.prank(REPORTER);
         escrow.reportSimulatedOutcome(true);
-        vm.warp(escrow.resolutionDeadline());
+        vm.warp(escrow.reportingDeadline());
         vm.expectRevert(DemoEventEscrow.NotClaimant.selector);
         escrow.claim();
         vm.prank(BENEFICIARY);
@@ -137,18 +196,28 @@ contract DemoEventEscrowTest {
         _deploy(payable(address(0)), AMOUNT);
         vm.expectRevert(DemoEventEscrow.InvalidConfiguration.selector);
         new DemoEventEscrow{value: AMOUNT}(
-            BENEFICIARY, address(0), uint64(block.timestamp + 1), "X"
+            BENEFICIARY, address(0), uint64(block.timestamp), uint64(block.timestamp + 1), "X"
         );
         vm.expectRevert(DemoEventEscrow.InvalidConfiguration.selector);
-        new DemoEventEscrow{value: AMOUNT}(BENEFICIARY, REPORTER, uint64(block.timestamp), "X");
+        new DemoEventEscrow{value: AMOUNT}(
+            BENEFICIARY, REPORTER, uint64(block.timestamp), uint64(block.timestamp), "X"
+        );
         vm.expectRevert(DemoEventEscrow.InvalidConfiguration.selector);
-        new DemoEventEscrow{value: AMOUNT}(BENEFICIARY, REPORTER, uint64(block.timestamp + 1), "");
+        new DemoEventEscrow{value: AMOUNT}(
+            BENEFICIARY, REPORTER, uint64(block.timestamp), uint64(block.timestamp + 1), ""
+        );
+        vm.expectRevert(DemoEventEscrow.InvalidConfiguration.selector);
+        new DemoEventEscrow{value: AMOUNT}(
+            BENEFICIARY, REPORTER, uint64(block.timestamp + 1), uint64(block.timestamp + 1), "X"
+        );
     }
 
     function testRejectsMainnetDeployment() public {
         vm.chainId(1);
         vm.expectRevert(DemoEventEscrow.DemoChainOnly.selector);
-        new DemoEventEscrow(BENEFICIARY, REPORTER, uint64(block.timestamp + 1), "X");
+        new DemoEventEscrow(
+            BENEFICIARY, REPORTER, uint64(block.timestamp), uint64(block.timestamp + 1), "X"
+        );
     }
 
     function testFuzzYesPayoutConservesDeposit(uint96 rawAmount) public {
@@ -178,7 +247,7 @@ contract DemoEventEscrowTest {
         uint256 amount = uint256(rawAmount) + 1;
         vm.deal(address(this), amount);
         DemoEventEscrow escrow = _deploy(BENEFICIARY, amount);
-        vm.warp(escrow.resolutionDeadline());
+        vm.warp(escrow.reportingDeadline());
         escrow.claim();
         require(address(this).balance == amount, "wrong timeout refund");
         require(address(escrow).balance == 0, "escrow not empty");

@@ -14,7 +14,8 @@ contract DemoEventEscrow {
     error InvalidConfiguration();
     error NotReporter();
     error AlreadyResolved();
-    error ResolutionDeadlinePassed();
+    error ReportingNotOpen();
+    error ReportingDeadlinePassed();
     error NotClaimant();
     error NotClaimable();
     error AlreadyClaimed();
@@ -27,7 +28,8 @@ contract DemoEventEscrow {
     address payable public immutable depositor;
     address payable public immutable beneficiary;
     address public immutable reporter;
-    uint64 public immutable resolutionDeadline;
+    uint64 public immutable reportingOpensAt;
+    uint64 public immutable reportingDeadline;
     uint256 public immutable deposit;
     string public marketTicker;
 
@@ -37,20 +39,23 @@ contract DemoEventEscrow {
     constructor(
         address payable beneficiary_,
         address reporter_,
-        uint64 resolutionDeadline_,
+        uint64 reportingOpensAt_,
+        uint64 reportingDeadline_,
         string memory marketTicker_
     ) payable {
         // Deliberately prevent accidental deployment on a value-bearing chain.
         if (block.chainid != 31337 && block.chainid != 84532) revert DemoChainOnly();
         if (
             beneficiary_ == address(0) || reporter_ == address(0) || msg.value == 0
-                || resolutionDeadline_ <= block.timestamp || bytes(marketTicker_).length == 0
+                || reportingDeadline_ <= block.timestamp || reportingOpensAt_ >= reportingDeadline_
+                || bytes(marketTicker_).length == 0
         ) revert InvalidConfiguration();
 
         depositor = payable(msg.sender);
         beneficiary = beneficiary_;
         reporter = reporter_;
-        resolutionDeadline = resolutionDeadline_;
+        reportingOpensAt = reportingOpensAt_;
+        reportingDeadline = reportingDeadline_;
         deposit = msg.value;
         marketTicker = marketTicker_;
     }
@@ -59,7 +64,8 @@ contract DemoEventEscrow {
     function reportSimulatedOutcome(bool yes) external {
         if (msg.sender != reporter) revert NotReporter();
         if (outcome != Outcome.Unresolved) revert AlreadyResolved();
-        if (block.timestamp >= resolutionDeadline) revert ResolutionDeadlinePassed();
+        if (block.timestamp < reportingOpensAt) revert ReportingNotOpen();
+        if (block.timestamp >= reportingDeadline) revert ReportingDeadlinePassed();
 
         outcome = yes ? Outcome.Yes : Outcome.No;
         emit SimulatedOutcomeReported(outcome);
@@ -72,7 +78,7 @@ contract DemoEventEscrow {
         address payable recipient;
         if (outcome == Outcome.Yes) {
             recipient = beneficiary;
-        } else if (outcome == Outcome.No || block.timestamp >= resolutionDeadline) {
+        } else if (outcome == Outcome.No || block.timestamp >= reportingDeadline) {
             recipient = depositor;
         } else {
             revert NotClaimable();

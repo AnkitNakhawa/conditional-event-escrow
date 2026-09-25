@@ -52,7 +52,8 @@ accounts="$(cast rpc eth_accounts --rpc-url "$demo_rpc")"
 depositor="$(jq -r '.[0]' <<<"$accounts")"
 reporter="$(jq -r '.[1]' <<<"$accounts")"
 beneficiary="$(jq -r '.[2]' <<<"$accounts")"
-deadline="$(( $(date +%s) + 604800 ))"
+reporting_opens_at="$(date +%s)"
+reporting_deadline="$(( reporting_opens_at + 604800 ))"
 deposit_wei="1000000000000000000"
 
 cd "$demo_root"
@@ -64,7 +65,7 @@ echo "Beneficiary before: $(cast balance "$beneficiary" --rpc-url "$demo_rpc") w
 
 deployment="$(forge create src/DemoEventEscrow.sol:DemoEventEscrow \
     --rpc-url "$demo_rpc" --unlocked --from "$depositor" --broadcast --json \
-    --value 1ether --constructor-args "$beneficiary" "$reporter" "$deadline" "KX-DEMO-MARKET")"
+    --value 1ether --constructor-args "$beneficiary" "$reporter" "$reporting_opens_at" "$reporting_deadline" "KX-DEMO-MARKET")"
 escrow="$(jq -r '.deployedTo // .contractAddress // empty' <<<"$deployment")"
 if [[ -z "$escrow" ]]; then
     echo "Could not read deployed contract address:" >&2

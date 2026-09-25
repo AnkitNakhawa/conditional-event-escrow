@@ -38,6 +38,11 @@ Phase 4 — reusable library API.
   - [x] Add a read-only settlement-candidate assessment for finalized binary YES/NO API results, with explicit non-actionable reasons and no transaction path.
   - [x] Test finalized YES/NO, unfinished, missing, and unsupported results; verify against a live finalized example.
 
+### Phase 4b — explicit reporting window (complete)
+- [x] Add `reportingOpensAt` and `reportingDeadline` to the demo contract; only the reporter may set an outcome inside the window.
+- [x] At the deadline, allow the depositor to refund only if still unresolved; preserve a timely YES/NO result after the deadline.
+- [x] Update Solidity boundary tests, SDK ABI/types/bytecode, local demo, and docs; run local checks.
+
 ### Phase 5 — real outcome integration research (pending)
 - [ ] Confirm a reliable, usable final-outcome feed for specific Kalshi market IDs.
 - [ ] Evaluate Stork access, terms, latency, fees, disputes, and unsupported markets.
@@ -80,3 +85,4 @@ Phase 4 — reusable library API.
 | Viem's cached block number made a fresh report appear unresolved | 1 | Disable caching for the block-number lookup while pinning all reads to that block. |
 | Local TypeScript build and `git status` stalled in filesystem reads | 1 | Verified the SDK from a clean temporary package install; retrying repository checks and will rely on CI for a clean checkout. |
 | `git diff --check` temporarily reported "Not a git repository" although `.git` exists | 1 | Repository commands recovered after delayed filesystem reads; recheck before committing. |
+| Attempted to read nonexistent `docs/escrow-spec.md` | 1 | Use repository file discovery before opening a spec path. |

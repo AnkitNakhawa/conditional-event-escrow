@@ -13,11 +13,12 @@ import {
 import { demoEscrowBytecode } from './bytecode.generated.js';
 
 export const demoEscrowAbi = parseAbi([
-  'constructor(address beneficiary_, address reporter_, uint64 resolutionDeadline_, string marketTicker_) payable',
+  'constructor(address beneficiary_, address reporter_, uint64 reportingOpensAt_, uint64 reportingDeadline_, string marketTicker_) payable',
   'function depositor() view returns (address)',
   'function beneficiary() view returns (address)',
   'function reporter() view returns (address)',
-  'function resolutionDeadline() view returns (uint64)',
+  'function reportingOpensAt() view returns (uint64)',
+  'function reportingDeadline() view returns (uint64)',
   'function deposit() view returns (uint256)',
   'function marketTicker() view returns (string)',
   'function outcome() view returns (uint8)',
@@ -33,7 +34,8 @@ export type Outcome = 'unresolved' | 'yes' | 'no';
 export interface CreateEscrowInput {
   beneficiary: Address;
   reporter: Address;
-  resolutionDeadline: bigint;
+  reportingOpensAt: bigint;
+  reportingDeadline: bigint;
   marketTicker: string;
   amountWei: bigint;
 }
@@ -43,7 +45,8 @@ export interface EscrowState {
   depositor: Address;
   beneficiary: Address;
   reporter: Address;
-  resolutionDeadline: bigint;
+  reportingOpensAt: bigint;
+  reportingDeadline: bigint;
   depositWei: bigint;
   marketTicker: string;
   outcome: Outcome;
@@ -66,8 +69,14 @@ export function validateCreateEscrow(input: CreateEscrowInput, nowSeconds: bigin
     throw new Error('Invalid reporter address');
   }
   if (input.amountWei <= 0n) throw new Error('Deposit must be positive');
-  if (input.resolutionDeadline <= nowSeconds || input.resolutionDeadline > maxUint64) {
-    throw new Error('Resolution deadline must be a future uint64 timestamp');
+  if (input.reportingOpensAt < 0n || input.reportingOpensAt > maxUint64) {
+    throw new Error('Reporting opens-at must be a uint64 timestamp');
+  }
+  if (input.reportingDeadline <= nowSeconds || input.reportingDeadline > maxUint64) {
+    throw new Error('Reporting deadline must be a future uint64 timestamp');
+  }
+  if (input.reportingOpensAt >= input.reportingDeadline) {
+    throw new Error('Reporting must open before the deadline');
   }
   if (!input.marketTicker.trim()) throw new Error('Market ticker must not be empty');
 }
@@ -96,7 +105,7 @@ export async function createEscrow(
   const hash = await walletClient.deployContract({
     abi: demoEscrowAbi,
     bytecode: demoEscrowBytecode,
-    args: [input.beneficiary, input.reporter, input.resolutionDeadline, input.marketTicker],
+    args: [input.beneficiary, input.reporter, input.reportingOpensAt, input.reportingDeadline, input.marketTicker],
     value: input.amountWei,
     account: walletClient.account,
     chain: walletClient.chain,
@@ -114,12 +123,13 @@ export async function getEscrow(publicClient: DemoPublicClient, address: Address
   const blockNumber = await publicClient.getBlockNumber({ cacheTime: 0 });
   const read = <T extends keyof typeof getters>(name: T) =>
     publicClient.readContract({ address, abi: demoEscrowAbi, functionName: name, blockNumber });
-  const [depositor, beneficiary, reporter, resolutionDeadline, depositWei, marketTicker, rawOutcome, claimed] =
+  const [depositor, beneficiary, reporter, reportingOpensAt, reportingDeadline, depositWei, marketTicker, rawOutcome, claimed] =
     await Promise.all([
       read('depositor'),
       read('beneficiary'),
       read('reporter'),
-      read('resolutionDeadline'),
+      read('reportingOpensAt'),
+      read('reportingDeadline'),
       read('deposit'),
       read('marketTicker'),
       read('outcome'),
@@ -134,7 +144,8 @@ export async function getEscrow(publicClient: DemoPublicClient, address: Address
     depositor: depositor as Address,
     beneficiary: beneficiary as Address,
     reporter: reporter as Address,
-    resolutionDeadline: resolutionDeadline as bigint,
+    reportingOpensAt: reportingOpensAt as bigint,
+    reportingDeadline: reportingDeadline as bigint,
     depositWei: depositWei as bigint,
     marketTicker: marketTicker as string,
     outcome,
@@ -146,7 +157,8 @@ const getters = {
   depositor: true,
   beneficiary: true,
   reporter: true,
-  resolutionDeadline: true,
+  reportingOpensAt: true,
+  reportingDeadline: true,
   deposit: true,
   marketTicker: true,
   outcome: true,
@@ -159,7 +171,7 @@ export function getClaimability(state: EscrowState, nowSeconds: bigint): {
 } {
   if (state.claimed) return { claimant: null, reason: 'claimed' };
   if (state.outcome === 'yes') return { claimant: state.beneficiary, reason: 'beneficiary' };
-  if (state.outcome === 'no' || nowSeconds >= state.resolutionDeadline) {
+  if (state.outcome === 'no' || nowSeconds >= state.reportingDeadline) {
     return { claimant: state.depositor, reason: 'depositor' };
   }
   return { claimant: null, reason: 'pending' };

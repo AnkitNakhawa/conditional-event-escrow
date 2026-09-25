@@ -22,7 +22,8 @@ const reporter = '0x000000000000000000000000000000000000cafE';
 const validInput = {
   beneficiary,
   reporter,
-  resolutionDeadline: 1_000_000n,
+  reportingOpensAt: 999_999n,
+  reportingDeadline: 1_000_000n,
   marketTicker: 'KX-DEMO-MARKET',
   amountWei: 1n,
 };
@@ -34,7 +35,9 @@ test('validates demo chain and creation parameters', () => {
   assert.doesNotThrow(() => validateCreateEscrow(validInput, 999_999n));
   assert.throws(() => validateCreateEscrow({ ...validInput, amountWei: 0n }, 0n), /positive/);
   assert.throws(() => validateCreateEscrow({ ...validInput, marketTicker: ' ' }, 0n), /empty/);
-  assert.throws(() => validateCreateEscrow({ ...validInput, resolutionDeadline: 0n }, 0n), /future/);
+  assert.throws(() => validateCreateEscrow({ ...validInput, reportingDeadline: 0n }, 0n), /future/);
+  assert.throws(() => validateCreateEscrow({ ...validInput, reportingOpensAt: -1n }, 0n), /uint64/);
+  assert.throws(() => validateCreateEscrow({ ...validInput, reportingOpensAt: 1_000_000n }, 0n), /before/);
   assert.throws(() => validateCreateEscrow({ ...validInput, beneficiary: 'invalid' }, 0n), /beneficiary/);
 });
 
@@ -44,7 +47,8 @@ test('interprets pending, resolved, expired, and claimed states', () => {
     depositor: reporter,
     beneficiary,
     reporter,
-    resolutionDeadline: 100n,
+    reportingOpensAt: 50n,
+    reportingDeadline: 100n,
     depositWei: 1n,
     marketTicker: 'KX-DEMO-MARKET',
     outcome: 'unresolved',
@@ -106,11 +110,14 @@ test('deploys, reads, reports, and claims via actual Anvil transactions', async 
     const { address } = await createEscrow(publicClient, wallet(depositorAddress), {
       beneficiary: beneficiaryAddress,
       reporter: reporterAddress,
-      resolutionDeadline: block.timestamp + 7n * 24n * 60n * 60n,
+      reportingOpensAt: block.timestamp,
+      reportingDeadline: block.timestamp + 7n * 24n * 60n * 60n,
       marketTicker: 'KX-DEMO-MARKET',
       amountWei: parseEther('1'),
     });
     const pending = await getEscrow(publicClient, address);
+    assert.equal(pending.reportingOpensAt, block.timestamp);
+    assert.equal(pending.reportingDeadline, block.timestamp + 7n * 24n * 60n * 60n);
     assert.equal(pending.depositWei, parseEther('1'));
     assert.equal(pending.outcome, 'unresolved');
     assert.equal((await publicClient.getBalance({ address })), parseEther('1'));

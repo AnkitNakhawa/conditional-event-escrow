@@ -6,7 +6,7 @@ From the repository root, run `forge build`, then `npm ci --prefix packages/sdk`
 
 The main package exports `createEscrow`, `getEscrow`, `getClaimability`, and `claimEscrow`. The separate `@conditional-event-escrow/sdk/development` export contains `reportSimulatedOutcome`. Callers provide their own [Viem](https://viem.sh/) public and wallet clients; the library never holds private keys.
 
-`createEscrow` requires a nonzero ETH deposit, a beneficiary, a reporter, a future resolution deadline, and a market ticker. It returns the deployed address and transaction receipt. `getEscrow` returns a one-block snapshot; `getClaimability` interprets that snapshot at a supplied chain timestamp. `claimEscrow` broadcasts a claim and waits for success.
+`createEscrow` requires a nonzero ETH deposit, a beneficiary, a reporter, a `reportingOpensAt` timestamp earlier than a future `reportingDeadline`, and a market ticker. Reporting is allowed at or after the opening time but not at or after the deadline. An unresolved escrow becomes refundable at the deadline; a timely reported result remains claimable afterward. The opening time is not proof of market finality. `createEscrow` returns the deployed address and transaction receipt. `getEscrow` returns a one-block snapshot; `getClaimability` interprets that snapshot at a supplied chain timestamp. `claimEscrow` broadcasts a claim and waits for success.
 
 The separate `@conditional-event-escrow/sdk/kalshi` export provides `getKalshiMarket(ticker)`. It reads one public Kalshi binary market and returns its exact ticker, title, rules, status, and raw API result. It requires no Kalshi key. A caller may inject `fetcher` for tests or pass an abort `signal`; requests time out after ten seconds.
 
