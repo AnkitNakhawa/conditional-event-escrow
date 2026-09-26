@@ -16,6 +16,10 @@
     "./kalshi": {
       "types": "./dist/kalshi.d.ts",
       "default": "./dist/kalshi.js"
+    },
+    "./settlement": {
+      "types": "./dist/settlement.d.ts",
+      "default": "./dist/settlement.js"
     }
   },
   "scripts": {

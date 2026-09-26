@@ -15,6 +15,7 @@ import {
   validateCreateEscrow,
 } from '../dist/index.js';
 import { reportSimulatedOutcome } from '../dist/development.js';
+import { checkEscrowSettlement } from '../dist/settlement.js';
 import { demoEscrowBytecode } from '../dist/bytecode.generated.js';
 
 const beneficiary = '0x000000000000000000000000000000000000bEEF';
@@ -121,6 +122,22 @@ test('deploys, reads, reports, and claims via actual Anvil transactions', async 
     assert.equal(pending.depositWei, parseEther('1'));
     assert.equal(pending.outcome, 'unresolved');
     assert.equal((await publicClient.getBalance({ address })), parseEther('1'));
+
+    const blockBeforeCheck = await publicClient.getBlockNumber({ cacheTime: 0 });
+    const settlementCheck = await checkEscrowSettlement(publicClient, address, {
+      fetcher: async () => new Response(JSON.stringify({ market: {
+        ticker: 'KX-DEMO-MARKET',
+        market_type: 'binary',
+        title: 'Demo market',
+        rules_primary: 'Demo rules',
+        status: 'finalized',
+        result: 'yes',
+      } })),
+    });
+    assert.equal(settlementCheck.kind, 'candidate');
+    assert.equal(settlementCheck.reportedOutcome, 'yes');
+    assert.equal(settlementCheck.verifiedOnchain, false);
+    assert.equal(await publicClient.getBlockNumber({ cacheTime: 0 }), blockBeforeCheck);
 
     await reportSimulatedOutcome(publicClient, wallet(reporterAddress), address, true);
     const reported = await getEscrow(publicClient, address);

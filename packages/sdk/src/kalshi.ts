@@ -18,6 +18,16 @@ export interface GetKalshiMarketOptions {
   signal?: AbortSignal;
 }
 
+export class KalshiMarketIdentityError extends Error {
+  constructor(
+    public readonly reason: 'invalid_market_ticker' | 'market_mismatch',
+    message: string,
+  ) {
+    super(message);
+    this.name = 'KalshiMarketIdentityError';
+  }
+}
+
 /** A classification of public API data, never authorization to report onchain. */
 export type KalshiSettlementCandidate =
   | {
@@ -61,7 +71,7 @@ export async function getKalshiMarket(
   options: GetKalshiMarketOptions = {},
 ): Promise<KalshiMarket> {
   if (typeof ticker !== 'string' || ticker.length > 200 || !tickerPattern.test(ticker)) {
-    throw new Error('Invalid Kalshi market ticker');
+    throw new KalshiMarketIdentityError('invalid_market_ticker', 'Invalid Kalshi market ticker');
   }
 
   const signal = options.signal
@@ -71,7 +81,9 @@ export async function getKalshiMarket(
   if (!response.ok) throw new Error(`Kalshi market request failed (HTTP ${response.status})`);
 
   const market = object(object(await response.json()).market);
-  if (requiredString(market, 'ticker') !== ticker) throw new Error('Kalshi returned a different market ticker');
+  if (requiredString(market, 'ticker') !== ticker) {
+    throw new KalshiMarketIdentityError('market_mismatch', 'Kalshi returned a different market ticker');
+  }
   if (requiredString(market, 'market_type') !== 'binary') {
     throw new Error('Only binary Kalshi markets are supported');
   }

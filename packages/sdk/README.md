@@ -22,3 +22,16 @@ console.log(assessment.kind);
 ```
 
 This lookup does **not** bind the ticker to the contract, verify that Kalshi's data is authentic onchain, or authorize a payout. `reportedResult` is descriptive offchain API data only. See [the library roadmap](../../docs/library-api.md) for the remaining outcome-source work.
+
+`@conditional-event-escrow/sdk/settlement` exports `checkEscrowSettlement(publicClient, escrowAddress, options?)`. It checks the exact market ticker recorded in an escrow, then refreshes escrow state and chain time at one block after the HTTP lookup. A `candidate` includes the unverified YES/NO API result; `not_ready` includes a stop reason such as `not_finalized`, `market_mismatch`, `reporting_not_open`, `reporting_deadline_passed`, or `already_resolved`. The result includes `checkedAtBlock` and `checkedAtTimestamp` so callers can see when it was observed. Network/API failures reject. It does not take a wallet client, sign, or broadcast a report, and a candidate can become stale immediately.
+
+```ts
+import { checkEscrowSettlement } from '@conditional-event-escrow/sdk/settlement';
+
+const check = await checkEscrowSettlement(publicClient, escrowAddress);
+if (check.kind === 'candidate') {
+  console.log(check.reportedOutcome, check.checkedAtBlock); // For human review only.
+} else {
+  console.log(check.reason);
+}
+```

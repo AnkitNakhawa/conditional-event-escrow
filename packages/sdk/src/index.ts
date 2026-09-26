@@ -116,11 +116,15 @@ export async function createEscrow(
   return { address: receipt.contractAddress, receipt };
 }
 
-export async function getEscrow(publicClient: DemoPublicClient, address: Address): Promise<EscrowState> {
+export async function getEscrow(
+  publicClient: DemoPublicClient,
+  address: Address,
+  options: { blockNumber?: bigint } = {},
+): Promise<EscrowState> {
   assertDemoChain(await publicClient.getChainId());
   if (!isAddress(address)) throw new Error('Invalid escrow address');
   // Pin all reads to one block so a report/claim cannot split this snapshot across blocks.
-  const blockNumber = await publicClient.getBlockNumber({ cacheTime: 0 });
+  const blockNumber = options.blockNumber ?? await publicClient.getBlockNumber({ cacheTime: 0 });
   const read = <T extends keyof typeof getters>(name: T) =>
     publicClient.readContract({ address, abi: demoEscrowAbi, functionName: name, blockNumber });
   const [depositor, beneficiary, reporter, reportingOpensAt, reportingDeadline, depositWei, marketTicker, rawOutcome, claimed] =

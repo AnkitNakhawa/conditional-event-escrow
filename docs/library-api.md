@@ -15,11 +15,13 @@ The repository is becoming a reusable **contract + TypeScript SDK**, not a brows
 | `@conditional-event-escrow/sdk/development` `reportSimulatedOutcome` | Submit a **simulated** result on supported test chains only. |
 | `@conditional-event-escrow/sdk/kalshi` `getKalshiMarket` | Fetch one binary market's identity, rules, status, and raw API result without changing contract state. |
 | `@conditional-event-escrow/sdk/kalshi` `getKalshiSettlementCandidate` | Identify a finalized YES/NO result as an unverified, offchain candidate; explain why other responses cannot be used. |
+| `@conditional-event-escrow/sdk/settlement` `checkEscrowSettlement` | Compare one escrow with its exact Kalshi market and current reporting window; return a read-only candidate or a specific stop reason. |
 
 The initial library should validate addresses, nonzero deposits, nonempty market identifiers, supported chain IDs, and a reporting opening time earlier than a future deadline before broadcasting. It should surface transaction hashes and onchain errors rather than masking them. It must never label a user-entered result as verified by Kalshi.
 
 The market lookup confirms the API returned the exact requested ticker and exposes the rules for review. It does not bind the fetched rules to a deployed contract, and its result field is **read-only offchain data**, not a trusted onchain result.
 The candidate assessment checks only the public API response. It cannot authenticate Kalshi to a smart contract, evaluate disputes or unusual payout rules, or submit a result.
+The escrow settlement check reads the escrow to discover its ticker, performs that public API lookup, then refreshes escrow state and chain time at one block. It is a point-in-time advisory result: a later report, claim, deadline, or chain reorganization can invalidate it. API/HTTP failures reject rather than being treated as a valid outcome. It never sends a transaction and does not make the API result trustworthy onchain.
 
 ## Exclusions
 

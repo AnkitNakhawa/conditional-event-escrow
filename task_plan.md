@@ -4,7 +4,7 @@
 Build an open-source developer library for fully funded, event-conditioned escrows. Its first release is testnet-only and uses a simulated result; the library must never imply that a simulated result is verified by Kalshi.
 
 ## Current phase
-Phase 4 — reusable library API.
+Phase 4c — read-only escrow settlement check.
 
 ## Phases
 
@@ -42,6 +42,12 @@ Phase 4 — reusable library API.
 - [x] Add `reportingOpensAt` and `reportingDeadline` to the demo contract; only the reporter may set an outcome inside the window.
 - [x] At the deadline, allow the depositor to refund only if still unresolved; preserve a timely YES/NO result after the deadline.
 - [x] Update Solidity boundary tests, SDK ABI/types/bytecode, local demo, and docs; run local checks.
+
+### Phase 4c — read-only escrow settlement check (in progress)
+- [ ] Add a library operation that pairs an escrow's exact ticker with an offchain settlement candidate and a fresh, block-pinned escrow/window snapshot.
+- [ ] Return explicit non-actionable reasons for finalized-result issues, ticker identity problems, resolved/claimed escrows, and closed reporting windows; never submit a transaction.
+- [ ] Cover stop reasons with focused mocked tests and exercise the full read-only path against Anvil with a mocked Kalshi response.
+- [ ] Document the point-in-time/trust limits, review the diff, run full checks, and commit/push the increment.
 
 ### Phase 5 — real outcome integration research (pending)
 - [ ] Confirm a reliable, usable final-outcome feed for specific Kalshi market IDs.
@@ -86,3 +92,4 @@ Phase 4 — reusable library API.
 | Local TypeScript build and `git status` stalled in filesystem reads | 1 | Verified the SDK from a clean temporary package install; retrying repository checks and will rely on CI for a clean checkout. |
 | `git diff --check` temporarily reported "Not a git repository" although `.git` exists | 1 | Repository commands recovered after delayed filesystem reads; recheck before committing. |
 | Attempted to read nonexistent `docs/escrow-spec.md` | 1 | Use repository file discovery before opening a spec path. |
+| Temporary SDK install with `npm ci --offline` missed cached `ws` tarball, then `tsc` was unavailable | 1 | Retry the isolated install with network access instead of treating the incomplete install as a code failure. |
