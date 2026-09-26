@@ -4,7 +4,7 @@
 Build an open-source developer library for fully funded, event-conditioned escrows. Its first release is testnet-only and uses a simulated result; the library must never imply that a simulated result is verified by Kalshi.
 
 ## Current phase
-Phase 4c — read-only escrow settlement check.
+Phase 5 — real outcome integration research (pending).
 
 ## Phases
 
@@ -43,11 +43,11 @@ Phase 4c — read-only escrow settlement check.
 - [x] At the deadline, allow the depositor to refund only if still unresolved; preserve a timely YES/NO result after the deadline.
 - [x] Update Solidity boundary tests, SDK ABI/types/bytecode, local demo, and docs; run local checks.
 
-### Phase 4c — read-only escrow settlement check (in progress)
-- [ ] Add a library operation that pairs an escrow's exact ticker with an offchain settlement candidate and a fresh, block-pinned escrow/window snapshot.
-- [ ] Return explicit non-actionable reasons for finalized-result issues, ticker identity problems, resolved/claimed escrows, and closed reporting windows; never submit a transaction.
-- [ ] Cover stop reasons with focused mocked tests and exercise the full read-only path against Anvil with a mocked Kalshi response.
-- [ ] Document the point-in-time/trust limits, review the diff, run full checks, and commit/push the increment.
+### Phase 4c — read-only escrow settlement check (complete)
+- [x] Add a library operation that pairs an escrow's exact ticker with an offchain settlement candidate and a fresh, block-pinned escrow/window snapshot.
+- [x] Return explicit non-actionable reasons for finalized-result issues, ticker identity problems, resolved/claimed escrows, and closed reporting windows; never submit a transaction.
+- [x] Cover stop reasons with focused mocked tests and exercise the full read-only path against Anvil with a mocked Kalshi response.
+- [x] Document the point-in-time/trust limits, review the diff, run full checks, and commit/push the increment.
 
 ### Phase 5 — real outcome integration research (pending)
 - [ ] Confirm a reliable, usable final-outcome feed for specific Kalshi market IDs.

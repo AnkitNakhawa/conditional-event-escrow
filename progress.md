@@ -5,6 +5,7 @@
 - Added explicit non-actionable reasons for market identity/result problems, claimed/resolved escrows, and reporting-window boundaries. The function has no wallet client or transaction path.
 - Added mocked reason/race tests and an Anvil-backed read-only integration assertion. A review caught that closed escrows should not depend on Kalshi API availability; the check now returns their stop reason before fetching.
 - Passed 18 SDK tests in a clean temporary install, including the Anvil path; passed `forge fmt --check`, `forge test --fuzz-runs 1000 -q`, the local transaction demo, and `git diff --check`.
+- Committed and pushed the feature as `a1df350`; GitHub Actions run 36215404727 passed every step from a clean checkout.
 
 ## Explicit reporting window
 - Added inclusive `reportingOpensAt` and exclusive `reportingDeadline` to the testnet escrow; unresolved deposits refund at the deadline while timely YES/NO results persist.
