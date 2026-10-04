@@ -19,3 +19,7 @@ const audit = auditBinaryCombo({
 The `payoffType: 'binary'` declaration is required for every leg and rejects explicit scalar/unknown types. The caller must still verify that both the legs and the combo pay exactly $0 or $1: this pure function cannot inspect market rules. Kalshi combos can have scalar/partial settlement; those are outside this API's scope. The input `observedPrice` is a normalized pre-fee cost per $1 max payoff; a later venue adapter must explain exactly how it derives that cost from a live quote.
 
 Run `npm ci --prefix packages/auditor` and `npm test --prefix packages/auditor` from the repository root.
+
+## Read-only Kalshi metadata
+
+`@combo-price-auditor/core/kalshi` exports `getKalshiComboMetadata(ticker)`. It reads the public exact-ticker market API and returns the selected leg tickers/sides and descriptive market fields. It returns `payoffType: 'unverified'` and `executableQuote: null` deliberately: the market's `binary` type does not establish that all leg settlements are strictly binary, and private RFQ quotes are not exposed by this public lookup. Verify each leg's rules before supplying `payoffType: 'binary'` to the arithmetic core. A public bid/ask of zero is not a free combo or a usable quote.
