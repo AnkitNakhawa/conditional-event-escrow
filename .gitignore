@@ -4,5 +4,5 @@ broadcast/
 lib/
 .env
 .DS_Store
-packages/sdk/node_modules/
-packages/sdk/dist/
+**/node_modules/
+**/dist/

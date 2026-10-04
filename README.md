@@ -1,14 +1,7 @@
-# Conditional Event Escrow
+# Prediction-market combo price auditor
 
-An experimental project building a testnet-only developer library for payments conditional on an event-market result. The [typed SDK](packages/sdk/README.md) now includes a read-only Kalshi market lookup, but the contract and local demo still use a **simulated outcome reporter**. They do **not** verify Kalshi settlements and must not be used with real funds. See [docs/library-api.md](docs/library-api.md) for the library roadmap.
+This repository is pivoting to a **read-only, open-source library** for explaining the price of prediction-market combos/parlays. The first milestone is a small, transparent mathematical audit: compare a quoted binary combo with its legs' probability estimates, independence benchmark, and valid joint-probability bounds. It does not trade, create RFQs, or promise profitable opportunities.
 
-See [task_plan.md](task_plan.md) for the roadmap and safety boundaries.
+The previous testnet-only escrow prototype is preserved under [`legacy/conditional-event-escrow/`](legacy/conditional-event-escrow/README.md). It is not the active product and must not be used with real funds. The GitHub repository URL retains its old name for continuity.
 
-## Current contract
-
-`DemoEventEscrow` locks one testnet ETH deposit against a named market ticker. A trusted reporter may submit a **simulated** YES or NO result from `reportingOpensAt` (inclusive) until `reportingDeadline` (exclusive). YES lets the beneficiary claim; NO or an unresolved result at the deadline lets the depositor reclaim. The start time is an agreed policy, not proof that Kalshi has finalized. The contract can deploy only on local chain ID 31337 or Base Sepolia chain ID 84532. A reporter can lie, so the contract is **not suitable for real money**. A recipient contract that refuses ETH can also prevent its own claim.
-
-Run `forge test` to exercise the unit and fuzz tests. See [docs/spec.md](docs/spec.md) for the state model and exclusions.
-For a one-command local transaction demo and guided test traces, see [docs/demo.md](docs/demo.md).
-
-This project is independent of Kalshi and Stork; it is not endorsed by either.
+See [`PIVOT_PLAN.md`](PIVOT_PLAN.md) for scope, staged validation, and risks. Implementation is beginning in small, tested commits.
