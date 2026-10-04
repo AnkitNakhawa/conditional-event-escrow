@@ -4,7 +4,7 @@
 Build a read-only, open-source library for transparent prediction-market combo price audits. No automated trading or profitability claims. See `PIVOT_PLAN.md` for the full scope and acceptance criteria.
 
 ## Current phase
-Phase 2 — pure binary price audit.
+Phase 2 — pure binary price audit (final verification and push).
 
 ## Phases
 
@@ -16,12 +16,13 @@ Phase 2 — pure binary price audit.
 - [x] Replace root README; remove the old workflow from active CI. A new workflow is part of Phase 2.
 - [x] Check tracked-file preservation, run the legacy contract tests in place, and commit/push.
 
-### Phase 2 — pure binary price audit (pending)
-- [ ] Create a typed TypeScript package without wallet/trading dependencies.
-- [ ] Compute independence benchmark and exact joint-probability bounds for 2–N binary legs.
-- [ ] Compare an observed combo quote without calling the difference a trading edge; reject invalid inputs and scalar/unknown leg payoffs.
-- [ ] Add focused tests, typecheck, run a code review, and commit/push.
-- [ ] Add new root CI for the package build and tests.
+### Phase 2 — pure binary price audit (in progress)
+- [x] Create a typed TypeScript package without wallet/trading dependencies.
+- [x] Compute independence benchmark and exact joint-probability bounds for 2–N binary legs.
+- [x] Compare an observed combo quote without calling the difference a trading edge; reject invalid inputs and explicit scalar/unknown leg payoffs.
+- [x] Add focused tests, typecheck, and run a code review.
+- [x] Add new root CI for the package build and tests.
+- [ ] Commit/push and confirm CI.
 
 ### Phase 3 — read-only market data (pending)
 - [ ] Confirm exact public Kalshi combo and leg response fields against live API fixtures.
@@ -38,3 +39,5 @@ Phase 2 — pure binary price audit.
 | Error | Resolution |
 | --- | --- |
 | Guessed old workflow filename `contract-tests.yml` | Listed tracked paths and used `.github/workflows/test.yml`. |
+| Initial progress/README patch failed because the README line was longer than expected | Read exact file and reapplied with precise context. |
+| Archived SDK `tsc` stalled for more than two minutes in the moved folder | Stopped the optional legacy SDK check; unchanged legacy contract tests and the active new package tests passed. Recheck in clean CI or isolated copy if legacy maintenance resumes. |
