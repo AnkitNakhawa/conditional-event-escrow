@@ -4,7 +4,7 @@
 Build an open-source developer library for fully funded, event-conditioned escrows. Its first release is testnet-only and uses a simulated result; the library must never imply that a simulated result is verified by Kalshi.
 
 ## Current phase
-Phase 5 — real outcome integration research (pending).
+Phase 5 — real outcome integration research (in progress).
 
 ## Phases
 
@@ -49,10 +49,13 @@ Phase 5 — real outcome integration research (pending).
 - [x] Cover stop reasons with focused mocked tests and exercise the full read-only path against Anvil with a mocked Kalshi response.
 - [x] Document the point-in-time/trust limits, review the diff, run full checks, and commit/push the increment.
 
-### Phase 5 — real outcome integration research (pending)
-- [ ] Confirm a reliable, usable final-outcome feed for specific Kalshi market IDs.
-- [ ] Evaluate Stork access, terms, latency, fees, disputes, and unsupported markets.
-- [ ] Design a replaceable outcome-source adapter; do not ship real-money settlement by default.
+### Phase 5 — real outcome integration research (in progress)
+- [x] Confirm a current finalized Kalshi market is readable by exact ticker through the public API; this is offchain evidence only.
+- [x] Check Stork's public Kalshi claim, EVM integration API, Base Sepolia address, and public feed registry; document what remains unverified.
+- [ ] Obtain from Stork a concrete final-outcome feed ID, encoding, coverage, test access, update method, terms, costs, and correction policy for one Kalshi binary market.
+- [ ] Reproduce a signed update and contract read for that exact market on Base Sepolia; compare with Kalshi's finalized API response without treating HTTP as proof.
+- [ ] Design and test a replaceable outcome-source adapter after the feed semantics are confirmed; do not ship real-money settlement by default.
+- [ ] Make a go/no-go decision based on verified feed coverage, availability, cost, and safety.
 
 ### Phase 6 — optional demos and external review (pending)
 - [ ] Add a user-facing interface only if it helps validate a concrete use case.
@@ -93,3 +96,4 @@ Phase 5 — real outcome integration research (pending).
 | `git diff --check` temporarily reported "Not a git repository" although `.git` exists | 1 | Repository commands recovered after delayed filesystem reads; recheck before committing. |
 | Attempted to read nonexistent `docs/escrow-spec.md` | 1 | Use repository file discovery before opening a spec path. |
 | Temporary SDK install with `npm ci --offline` missed cached `ws` tarball, then `tsc` was unavailable | 1 | Retry the isolated install with network access instead of treating the incomplete install as a code failure. |
+| Previously used finalized Kalshi example returned HTTP 404 on 2026-10-04 | 1 | Find a current documented or live finalized market before claiming repeatability; do not treat old ticker as a stable fixture. |

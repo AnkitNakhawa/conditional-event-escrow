@@ -1,5 +1,10 @@
 # Progress log
 
+## 2026-10-04 — Phase 5 oracle feasibility research
+- Began validating whether a specific Kalshi finalized result can be delivered to and verified on Base Sepolia. Confirmed Stork's public Kalshi integration claim and Base Sepolia contract listing, but not a concrete outcome feed or terms yet.
+- Replaced an obsolete finalized ticker (now 404) with a live finalized Kalshi temperature-market example. Confirmed API schema and result; Stork feed availability for that exact ticker remains unverified.
+- Added `docs/oracle-feasibility.md` with a staged proof, go/no-go gate, and exact questions for Stork; expanded Phase 5 roadmap. No onchain code or payout path changed.
+
 ## 2026-09-25 — read-only escrow settlement check
 - Added a separate settlement export that reads an escrow's ticker, assesses one exact Kalshi market, then refreshes escrow state and chain time at one block after the HTTP lookup.
 - Added explicit non-actionable reasons for market identity/result problems, claimed/resolved escrows, and reporting-window boundaries. The function has no wallet client or transaction path.
