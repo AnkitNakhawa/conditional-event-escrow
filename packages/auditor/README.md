@@ -1,6 +1,6 @@
 # Combo price auditor core
 
-Pure TypeScript arithmetic for binary all-win prediction-market combos. It has no network, wallet, RFQ, or trading code.
+Pure TypeScript arithmetic for binary all-win prediction-market combos, plus a separate read-only Kalshi metadata/rules lookup. The arithmetic core has no network dependency; the package has no wallet, RFQ, or trading code.
 
 ```ts
 import { auditBinaryCombo } from '@combo-price-auditor/core';
@@ -23,3 +23,5 @@ Run `npm ci --prefix packages/auditor` and `npm test --prefix packages/auditor` 
 ## Read-only Kalshi metadata
 
 `@combo-price-auditor/core/kalshi` exports `getKalshiComboMetadata(ticker)`. It reads the public exact-ticker market API and returns the selected leg tickers/sides and descriptive market fields. It returns `payoffType: 'unverified'` and `executableQuote: null` deliberately: the market's `binary` type does not establish that all leg settlements are strictly binary, and private RFQ quotes are not exposed by this public lookup. Verify each leg's rules before supplying `payoffType: 'binary'` to the arithmetic core. A public bid/ask of zero is not a free combo or a usable quote.
+
+`getKalshiComboRulesSnapshot(ticker)` additionally fetches each selected leg's exact public market page and returns its title, status, raw market type, primary/secondary rules, and update time. Every leg remains `payoffType: 'unverified'`; this is a rules-inspection aid, not a payout classifier. The returned `fetchedAt` is when the client finished reading the data, not an exchange timestamp or quote freshness guarantee. `consistency: 'non_atomic'` means the combo and legs came from separate requests; if a leg is missing or malformed, the entire lookup fails. The function never requests RFQs or submits orders.

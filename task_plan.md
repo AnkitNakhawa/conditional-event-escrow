@@ -4,7 +4,7 @@
 Build a read-only, open-source library for transparent prediction-market combo price audits. No automated trading or profitability claims. See `PIVOT_PLAN.md` for the full scope and acceptance criteria.
 
 ## Current phase
-Phase 3 — read-only Kalshi market metadata (first slice).
+Phase 3 — read-only Kalshi market metadata and rules.
 
 ## Phases
 
@@ -28,7 +28,7 @@ Phase 3 — read-only Kalshi market metadata (first slice).
 - [x] Confirm exact public Kalshi combo composition fields against a live exact-ticker response; note zero public bid/ask is not an RFQ quote.
 - [x] Add a narrow exact-ticker, read-only combo metadata adapter that marks payoff type unverified and executable quote unavailable.
 - [x] Test valid, malformed, missing, unsupported, and HTTP-failure responses with mocked fetch; live-smoke one current combo.
-- [ ] Read each leg's rules/payoff semantics conservatively before using it in a binary audit.
+- [x] Read each leg's public primary/secondary rules and market identity, without inferring binary-only payout semantics.
 - [ ] Add snapshot/freshness metadata and a quote-input path for participant-owned RFQs; no RFQ creation or order submission.
 
 ### Phase 4 — historical validation (pending)
