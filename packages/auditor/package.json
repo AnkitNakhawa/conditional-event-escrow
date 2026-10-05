@@ -12,6 +12,10 @@
     "./kalshi": {
       "types": "./dist/kalshi.d.ts",
       "default": "./dist/kalshi.js"
+    },
+    "./quote": {
+      "types": "./dist/quote.d.ts",
+      "default": "./dist/quote.js"
     }
   },
   "scripts": {

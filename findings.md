@@ -11,6 +11,7 @@
 - The new `getKalshiComboMetadata` read-only adapter successfully fetched that exact ticker on 2026-10-04 and returned four legs with `payoffType: unverified` and `executableQuote: null`. A generic `market_type: binary` does not certify that every component pays only $0/$1; leg rules still need examination.
 - The live leg `KXNFLGAME-26OCT04GBTB-GB` had `market_type: binary`, yet its secondary rules stated that a tie resolves to $0.50 for each team and a game not started within 48 hours resolves to a fair price. The read-only rules lookup therefore preserves raw rules and keeps `payoffType: unverified`; it cannot safely promote that market to a strict $0/$1 payoff. Observed via public exact-ticker API on 2026-10-04.
 - `getKalshiComboRulesSnapshot` fetched all four selected legs for the ephemeral combo above. Each returned rules text; this validates the lookup path, not settlement eligibility or quote availability. The separate requests are explicitly non-atomic, and its client `fetchedAt` is not market-data freshness.
+- A participant-supplied quote can be compared without credentials or a private RFQ API if the caller normalizes its buy-YES cost per $1 maximum payout, supplies an observation timestamp and leg estimates, and explicitly attests strict binary payout for the combo and legs. Timestamp age is only a screening rule: it cannot prove the quote remains executable. The new pure quote path preserves `executableQuoteVerified: false` and `payoutVerifiedByLibrary: false`.
 
 ## Pivot decisions
 
